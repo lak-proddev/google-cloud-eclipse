@@ -23,7 +23,8 @@ class MissingRuntime extends ElementProblem {
 
   MissingRuntime() {
     super("A runtime element is required.",
-        "com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker");
+        "com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker",
+        new MissingRuntimeQuickAssistProcessor());
   }
 
 }

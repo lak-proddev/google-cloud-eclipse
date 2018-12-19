@@ -64,6 +64,15 @@ class ElementProblem {
         IMarker.SEVERITY_WARNING, IMessage.NORMAL_SEVERITY, new DocumentLocation(0, 0), 1, null);
   }
 
+  /**
+   * A problem with no specific location in the document such as an element
+   * that should be present but isn't.
+   */
+  ElementProblem(String message, String markerId, IQuickAssistProcessor processor) {
+    this(message, markerId,
+        IMarker.SEVERITY_WARNING, IMessage.NORMAL_SEVERITY, new DocumentLocation(0, 0), 1, processor);
+  }
+
   String getMessage() {
     return message;
   }
