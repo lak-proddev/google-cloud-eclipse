@@ -89,10 +89,10 @@ public class XmlSourceValidator implements ISourceValidator, IValidator, IExecut
     try {
       Document document = PositionalXmlScanner.parse(bytes);
       if (document != null) {
-        List<ElementProblem> blacklist = helper.checkForProblems(source, document);
+        List<ElementProblem> problems = helper.checkForProblems(source, document);
         String encoding = (String) document.getDocumentElement().getUserData("encoding");
         Map<ElementProblem, Integer> problemOffsetMap =
-            ValidationUtils.getOffsetMap(bytes, blacklist, encoding);
+            ValidationUtils.getOffsetMap(bytes, problems, encoding);
         for (Map.Entry<ElementProblem, Integer> entry : problemOffsetMap.entrySet()) {
           createMessage(reporter, entry.getKey(), entry.getValue());
         }

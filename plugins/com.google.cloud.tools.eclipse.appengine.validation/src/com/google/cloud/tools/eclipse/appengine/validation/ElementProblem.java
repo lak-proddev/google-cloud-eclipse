@@ -61,7 +61,7 @@ class ElementProblem {
    */
   ElementProblem(String message, String markerId) {
     this(message, markerId,
-        IMarker.SEVERITY_WARNING, IMessage.NORMAL_SEVERITY, new DocumentLocation(0, 0), 1, null);
+        IMarker.SEVERITY_WARNING, IMessage.NORMAL_SEVERITY, new DocumentLocation(1, 1), 1, null);
   }
 
   /**
@@ -70,7 +70,7 @@ class ElementProblem {
    */
   ElementProblem(String message, String markerId, IQuickAssistProcessor processor) {
     this(message, markerId,
-        IMarker.SEVERITY_WARNING, IMessage.NORMAL_SEVERITY, new DocumentLocation(0, 0), 1, processor);
+        IMarker.SEVERITY_WARNING, IMessage.NORMAL_SEVERITY, new DocumentLocation(1, 1), 1, processor);
   }
 
   String getMessage() {
