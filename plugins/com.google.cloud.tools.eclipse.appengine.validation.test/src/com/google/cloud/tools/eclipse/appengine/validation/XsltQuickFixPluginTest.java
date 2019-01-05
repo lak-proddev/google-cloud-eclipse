@@ -41,7 +41,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mockito;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -76,9 +75,9 @@ public class XsltQuickFixPluginTest {
       SAXException, CoreException {
     file.create(ValidationTestUtils.stringToInputStream(APPLICATION_XML), IFile.FORCE, null);
 
-    IMarker marker = Mockito.mock(IMarker.class);
-    Mockito.when(marker.getResource()).thenReturn(file);
-
+    IMarker marker =
+        file.createMarker("com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker");
+    
     XsltQuickFix fix = new XsltQuickFix("/xslt/removeApplication.xsl",
         Messages.getString("remove.application.element"));
     fix.run(marker);
@@ -97,8 +96,8 @@ public class XsltQuickFixPluginTest {
       SAXException, CoreException {
     file.create(ValidationTestUtils.stringToInputStream(
         VERSION_XML), IFile.FORCE, null);
-    IMarker marker = Mockito.mock(IMarker.class);
-    Mockito.when(marker.getResource()).thenReturn(file);
+    IMarker marker =
+        file.createMarker("com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker");
 
     XsltQuickFix fix = new XsltQuickFix("/xslt/removeVersion.xsl",
         Messages.getString("remove.version.element"));
@@ -126,8 +125,9 @@ public class XsltQuickFixPluginTest {
     String preContents = preDocument.get();
     assertTrue(preContents.contains("application"));
 
-    IMarker marker = Mockito.mock(IMarker.class);
-    Mockito.when(marker.getResource()).thenReturn(file);
+    IMarker marker =
+        file.createMarker("com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker");
+
     XsltQuickFix fix = new XsltQuickFix("/xslt/removeApplication.xsl",
         Messages.getString("remove.application.element"));
     fix.run(marker);
