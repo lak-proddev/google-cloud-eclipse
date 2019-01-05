@@ -133,7 +133,6 @@ public class XsltQuickFixPluginTest {
 
     Document transformed = builder.parse(file.getContents());
     NodeList children = transformed.getDocumentElement().getChildNodes();
-    assertEquals(1, children.getLength());
     Element runtime = (Element) children.item(0);
 
     assertEquals("runtime", runtime.getLocalName());
