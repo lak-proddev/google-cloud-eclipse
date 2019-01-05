@@ -42,6 +42,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -54,25 +56,24 @@ public class XsltQuickFixPluginTest {
       + "<application>"
       + "</application>"
       + "</appengine-web-app>";
-  private static final String VERSION_XML =
-      "<appengine-web-app xmlns='http://appengine.google.com/ns/1.0'>"
-      + "<version>"
-      + "</version>"
-      + "</appengine-web-app>";
 
   private IFile file;
+  private DocumentBuilder builder;
 
   @Rule public TestProjectCreator projectCreator = new TestProjectCreator();
 
   @Before
-  public void setup() {
+  public void setup() throws ParserConfigurationException {
     IProject project = projectCreator.getProject();
     file = project.getFile("testdata.xml");
+    
+    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+    builderFactory.setNamespaceAware(true);
+    builder = builderFactory.newDocumentBuilder();
   }
 
   @Test
-  public void testRun_removeApplicationElement() throws IOException, ParserConfigurationException,
-      SAXException, CoreException {
+  public void testRun_removeApplicationElement() throws IOException, CoreException, SAXException {
     file.create(ValidationTestUtils.stringToInputStream(APPLICATION_XML), IFile.FORCE, null);
 
     IMarker marker =
@@ -85,18 +86,21 @@ public class XsltQuickFixPluginTest {
 
     Assert.assertFalse(marker.exists());
     
-    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-    builderFactory.setNamespaceAware(true);
-    DocumentBuilder builder = builderFactory.newDocumentBuilder();
     Document transformed = builder.parse(file.getContents());
     assertEquals(0, transformed.getDocumentElement().getChildNodes().getLength());
   }
 
   @Test
-  public void testRun_removeVersionElement() throws IOException, ParserConfigurationException,
-      SAXException, CoreException {
+  public void testRun_removeVersionElement() throws IOException, SAXException, CoreException {
+
+    String versionXml =
+        "<appengine-web-app xmlns='http://appengine.google.com/ns/1.0'>"
+        + "<version>"
+        + "</version>"
+        + "</appengine-web-app>";
+    
     file.create(ValidationTestUtils.stringToInputStream(
-        VERSION_XML), IFile.FORCE, null);
+        versionXml), IFile.FORCE, null);
     IMarker marker =
         file.createMarker("com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker");
     Assert.assertTrue(marker.exists());
@@ -106,9 +110,6 @@ public class XsltQuickFixPluginTest {
     fix.run(marker);
     Assert.assertFalse(marker.exists());
 
-    DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-    builderFactory.setNamespaceAware(true);
-    DocumentBuilder builder = builderFactory.newDocumentBuilder();
     Document transformed = builder.parse(file.getContents());
     assertEquals(0, transformed.getDocumentElement().getChildNodes().getLength());
 
@@ -116,6 +117,32 @@ public class XsltQuickFixPluginTest {
     assertEquals(1, file.getHistory(null).length);
   }
 
+  @Test
+  public void testRun_UpgradeRuntimeElement() throws IOException, SAXException, CoreException {
+
+    String xml = "<appengine-web-app xmlns='http://appengine.google.com/ns/1.0'/>";
+    
+    file.create(ValidationTestUtils.stringToInputStream(xml), IFile.FORCE, null);
+    IMarker marker =
+        file.createMarker("com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker");
+    Assert.assertTrue(marker.exists());
+
+    XsltQuickFix fix = new XsltQuickFix("/xslt/upgradeRuntime.xsl", "");
+    fix.run(marker);
+    Assert.assertFalse(marker.exists());
+
+    Document transformed = builder.parse(file.getContents());
+    NodeList children = transformed.getDocumentElement().getChildNodes();
+    assertEquals(1, children.getLength());
+    Element runtime = (Element) children.item(0);
+
+    assertEquals("runtime", runtime.getLocalName());
+    assertEquals("java8", runtime.getTextContent());
+    
+    assertTrue(file.isSynchronized(0));
+    assertEquals(1, file.getHistory(null).length);
+  }  
+  
   @Test
   public void testRun_existingEditor() throws CoreException {
     file.create(ValidationTestUtils.stringToInputStream(APPLICATION_XML), IFile.FORCE, null);
