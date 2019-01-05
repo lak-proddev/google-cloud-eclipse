@@ -77,6 +77,7 @@ public class XsltQuickFixPluginTest {
 
     IMarker marker =
         file.createMarker("com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker");
+    Assert.assertTrue(marker.exists());
     
     XsltQuickFix fix = new XsltQuickFix("/xslt/removeApplication.xsl",
         Messages.getString("remove.application.element"));
@@ -98,6 +99,7 @@ public class XsltQuickFixPluginTest {
         VERSION_XML), IFile.FORCE, null);
     IMarker marker =
         file.createMarker("com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker");
+    Assert.assertTrue(marker.exists());
 
     XsltQuickFix fix = new XsltQuickFix("/xslt/removeVersion.xsl",
         Messages.getString("remove.version.element"));
@@ -127,6 +129,7 @@ public class XsltQuickFixPluginTest {
 
     IMarker marker =
         file.createMarker("com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker");
+    Assert.assertTrue(marker.exists());
 
     XsltQuickFix fix = new XsltQuickFix("/xslt/removeApplication.xsl",
         Messages.getString("remove.application.element"));
