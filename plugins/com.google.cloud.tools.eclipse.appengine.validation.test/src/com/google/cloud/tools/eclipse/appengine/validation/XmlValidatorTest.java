@@ -41,13 +41,15 @@ import org.junit.Test;
 
 public class XmlValidatorTest {
 
-  private static final String XML_NO_PROBLEM_ELEMENTS = "<test></test>";
+  private static final String XML_NO_PROBLEM_ELEMENTS = 
+      "<appengine-web-app xmlns='http://appengine.google.com/ns/1.0'>"
+      + "<runtime>java8</runtime></<appengine-web-app>";
   private static final String XML =
       "<application xmlns='http://appengine.google.com/ns/1.0'>"
       + "<runtime>java8</runtime></application>";
   private static final String BAD_XML = "<";
   private static final String APPLICATION_MARKER =
-      "com.google.cloud.tools.eclipse.appengine.validation.appEngineBlacklistMarker";
+      "com.google.cloud.tools.eclipse.appengine.validation.appEngineConfigurationMarker";
 
   @Rule public TestProjectCreator appEngineStandardProjectCreator =
       new TestProjectCreator().withFacets(JavaFacet.VERSION_1_7, WebFacetUtils.WEB_25,

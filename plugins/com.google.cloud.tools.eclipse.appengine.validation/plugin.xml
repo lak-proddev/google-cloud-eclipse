@@ -6,10 +6,9 @@
       name="%appengine.web"
       point="org.eclipse.wst.validation.validatorV2" 
       id="appEngineWebXmlValidator">
-    <!-- TODO should this specify more than one marker type? -->
     <validator
     	class="com.google.cloud.tools.eclipse.appengine.validation.XmlValidator:com.google.cloud.tools.eclipse.appengine.validation.AppEngineWebXmlValidator"
-      	markerId="com.google.cloud.tools.eclipse.appengine.validation.appEngineBlacklistMarker,com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker">
+      	markerId="com.google.cloud.tools.eclipse.appengine.validation.appEngineConfigurationMarker">
       <include>
         <rules>
           <file type="file" name="appengine-web.xml"/>
@@ -85,8 +84,8 @@
 
   
   <extension
-      id="appEngineBlacklistMarker"
-      name="%appengine.blacklist.marker"
+      id="appEngineConfigurationMarker"
+      name="%appengine.configuration.marker"
       point="org.eclipse.core.resources.markers">
     <super type="org.eclipse.jdt.core.problem" />
     <super type="org.eclipse.core.resources.problemmarker" />
@@ -96,27 +95,25 @@
   
   <extension
       id="applicationMarker"
-      name="%appengine.blacklist.marker"
+      name="%appengine.configuration.marker"
       point="org.eclipse.core.resources.markers">
-    <super type="com.google.cloud.tools.eclipse.appengine.validation.appEngineBlacklistMarker" />
+    <super type="com.google.cloud.tools.eclipse.appengine.validation.appEngineConfigurationMarker" />
     <persistent value="true" />
   </extension>
   
   <extension
       id="versionMarker"
-      name="%appengine.blacklist.marker"
+      name="%appengine.configuration.marker"
       point="org.eclipse.core.resources.markers">
-    <super type="com.google.cloud.tools.eclipse.appengine.validation.appEngineBlacklistMarker" />
+    <super type="com.google.cloud.tools.eclipse.appengine.validation.appEngineConfigurationMarker" />
     <persistent value="true" />
   </extension>
   
   <extension
       id="runtimeMarker"
-      name="%appengine.runtime.marker"
+      name="%appengine.configuration.marker"
       point="org.eclipse.core.resources.markers">
-    <super type="com.google.cloud.tools.eclipse.appengine.validation.appEngineBlacklistMarker" />
-<!--    <super type="org.eclipse.core.resources.problemmarker" />
-    <super type="org.eclipse.core.resources.textmarker" /> -->
+    <super type="com.google.cloud.tools.eclipse.appengine.validation.appEngineConfigurationMarker" />
     <persistent value="true" />
   </extension>  
    
