@@ -85,7 +85,7 @@
 
   <!-- Markers -->
   <extension
-      id="appEngineConfigurationMarker"
+      id="com.google.cloud.tools.eclipse.appengine.validation.appEngineConfigurationMarker"
       name="%appengine.configuration.marker"
       point="org.eclipse.core.resources.markers">
     <super type="org.eclipse.jdt.core.problem" />
