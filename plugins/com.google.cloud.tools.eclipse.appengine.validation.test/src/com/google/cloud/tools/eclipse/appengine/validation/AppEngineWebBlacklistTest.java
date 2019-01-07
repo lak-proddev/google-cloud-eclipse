@@ -17,30 +17,12 @@
 package com.google.cloud.tools.eclipse.appengine.validation;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-
-import org.junit.Assert;
 import org.junit.Test;
 
 public class AppEngineWebBlacklistTest {
-  
-  @Test
-  public void testBlacklisted() {
-    Assert.assertTrue(AppEngineWebBlacklist.contains("application"));
-  }
- 
-  @Test
-  public void testContains() {
-    assertFalse(AppEngineWebBlacklist.contains("foo"));
-  }
-  
-  @Test
-  public void testContains_nullArg() {
-    assertFalse(AppEngineWebBlacklist.contains(null));
-  }
   
   @Test(expected = NullPointerException.class)
   public void testGetBlacklistElementMessage_nullArg() {
@@ -61,7 +43,7 @@ public class AppEngineWebBlacklistTest {
   @Test
   public void testGetQuickAssistProcessor() {
     assertEquals(VersionQuickAssistProcessor.class.getName(),
-        AppEngineWebBlacklist.getQuickAssistProcessor("version").getClass().getName());
+        AppEngineWebBlacklist.getQuickFixProcessor("version").getClass().getName());
   }
   
   @Test

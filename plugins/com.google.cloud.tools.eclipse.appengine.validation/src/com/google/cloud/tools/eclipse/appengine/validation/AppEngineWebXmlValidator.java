@@ -51,7 +51,7 @@ class AppEngineWebXmlValidator implements XmlValidationHelper {
       for (int i = 0; i < nodeList.getLength(); i++) {
         Node node = nodeList.item(i);
         DocumentLocation userData = (DocumentLocation) node.getUserData("location");
-        AppEngineBlacklistElement problem = new AppEngineBlacklistElement(
+        ElementProblem problem = new AppEngineBlacklistElement(
             elementName,
             userData,
             node.getTextContent().length());

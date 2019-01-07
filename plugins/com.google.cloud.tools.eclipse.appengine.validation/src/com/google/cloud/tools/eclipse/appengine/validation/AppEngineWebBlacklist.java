@@ -24,6 +24,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 
+// TODO no longer a straight blacklist
 class AppEngineWebBlacklist {
   
   private static final ImmutableMap<String, List<String>> BLACKLIST =
@@ -38,14 +39,11 @@ class AppEngineWebBlacklist {
   /**
    * The {@link AbstractQuickAssistProcessor} for each tag.
    */
-  private static final ImmutableMap<String, AbstractQuickAssistProcessor> QUICK_ASSIST_PROCESSORS =
+  private static final ImmutableMap<String, AbstractQuickAssistProcessor> QUICK_FIX_PROCESSORS =
       ImmutableMap.of(
           "application", new ApplicationQuickAssistProcessor(),
-          "version", new VersionQuickAssistProcessor());
-  
-  static boolean contains(String elementName) {
-    return BLACKLIST.containsKey(elementName);
-  }
+          "version", new VersionQuickAssistProcessor(),
+          "runtime", new UpgradeRuntimeQuickAssistProcessor());
   
   static String getBlacklistElementMessage(String element) {
     Preconditions.checkNotNull(element, "element is null");
@@ -65,9 +63,9 @@ class AppEngineWebBlacklist {
     return values.get(1);
   }
   
-  static AbstractQuickAssistProcessor getQuickAssistProcessor(String element) {
+  static AbstractQuickAssistProcessor getQuickFixProcessor(String element) {
     Preconditions.checkNotNull(element, "element is null");
-    return QUICK_ASSIST_PROCESSORS.get(element);
+    return QUICK_FIX_PROCESSORS.get(element);
   }
   
   static ArrayList<String> getBlacklistElements() {
