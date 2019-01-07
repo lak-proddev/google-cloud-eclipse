@@ -2,6 +2,7 @@
 <?eclipse version="3.4"?>
 <plugin>
   
+  <!-- Validators -->
   <extension 
       name="%appengine.web"
       point="org.eclipse.wst.validation.validatorV2" 
@@ -25,7 +26,7 @@
   <extension 
       name="%web.xml"
       point="org.eclipse.wst.validation.validatorV2" 
-      id="webXmlValidator">
+      id="servletValidator">
     <validator
     	class="com.google.cloud.tools.eclipse.appengine.validation.XmlValidator:com.google.cloud.tools.eclipse.appengine.validation.WebXmlValidator"
     	markerId="com.google.cloud.tools.eclipse.appengine.validation.servletMarker">
@@ -45,7 +46,7 @@
   <extension 
       name="%web.xml"
       point="org.eclipse.wst.validation.validatorV2" 
-      id="webXmlValidator">
+      id="undefinedServletValidator">
     <validator
     	class="com.google.cloud.tools.eclipse.appengine.validation.XmlValidator:com.google.cloud.tools.eclipse.appengine.validation.WebXmlValidator"
     	markerId="com.google.cloud.tools.eclipse.appengine.validation.undefinedServletMarker">
@@ -82,7 +83,7 @@
     </validator>
   </extension>
 
-  
+  <!-- Markers -->
   <extension
       id="appEngineConfigurationMarker"
       name="%appengine.configuration.marker"
@@ -95,7 +96,7 @@
   
   <extension
       id="applicationMarker"
-      name="%appengine.configuration.marker"
+      name="Obsolete application element"
       point="org.eclipse.core.resources.markers">
     <super type="com.google.cloud.tools.eclipse.appengine.validation.appEngineConfigurationMarker" />
     <persistent value="true" />
@@ -103,7 +104,7 @@
   
   <extension
       id="versionMarker"
-      name="%appengine.configuration.marker"
+      name="Obsolete version element"
       point="org.eclipse.core.resources.markers">
     <super type="com.google.cloud.tools.eclipse.appengine.validation.appEngineConfigurationMarker" />
     <persistent value="true" />
@@ -111,7 +112,7 @@
   
   <extension
       id="runtimeMarker"
-      name="%appengine.configuration.marker"
+      name="Obsolete runtime element"
       point="org.eclipse.core.resources.markers">
     <super type="com.google.cloud.tools.eclipse.appengine.validation.appEngineConfigurationMarker" />
     <persistent value="true" />
@@ -168,37 +169,28 @@
     <persistent value="true" />
   </extension> 
  
+  <!-- Marker resolutions -->
   <extension
       point="org.eclipse.ui.ide.markerResolution">
     <markerResolutionGenerator
       class="com.google.cloud.tools.eclipse.appengine.validation.AppEngineWebMarkerResolutionGenerator"
       markerType="com.google.cloud.tools.eclipse.appengine.validation.versionMarker">
     </markerResolutionGenerator>
-  </extension>
-  
-  <extension
-      point="org.eclipse.ui.ide.markerResolution">
     <markerResolutionGenerator
       class="com.google.cloud.tools.eclipse.appengine.validation.AppEngineWebMarkerResolutionGenerator"
       markerType="com.google.cloud.tools.eclipse.appengine.validation.applicationMarker">
     </markerResolutionGenerator>
-  </extension>
-
-  <extension
-      point="org.eclipse.ui.ide.markerResolution">
     <markerResolutionGenerator
       class="com.google.cloud.tools.eclipse.appengine.validation.AppEngineWebMarkerResolutionGenerator"
       markerType="com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker">
     </markerResolutionGenerator>
-  </extension>
-  
-  <extension point="org.eclipse.ui.ide.markerResolution">
     <markerResolutionGenerator
       class="com.google.cloud.tools.eclipse.appengine.validation.ServletMarkerResolutionGenerator"
       markerType="com.google.cloud.tools.eclipse.appengine.validation.servletMarker">
     </markerResolutionGenerator>
   </extension>
 
+ <!--
   <extension point="org.eclipse.wst.sse.ui.sourcevalidation">
     <validator
 		scope="total"
@@ -220,6 +212,7 @@
 		</contentTypeIdentifier>
 	  </validator>
   </extension>
+  -->
   
   <extension point="org.eclipse.core.contenttype.contentTypes"> 
     <content-type 

@@ -19,6 +19,8 @@ package com.google.cloud.tools.eclipse.appengine.validation;
 import static org.junit.Assert.assertEquals;
 
 import org.eclipse.jface.text.contentassist.ICompletionProposal;
+import org.eclipse.jface.text.source.Annotation;
+import org.junit.Assert;
 import org.junit.Test;
 
 public class AbstractQuickAssistProcessorTest {
@@ -42,6 +44,13 @@ public class AbstractQuickAssistProcessorTest {
   @Test
   public void testComputeUpgradeRuntimeQuickAssistProposals() {
     AbstractQuickAssistProcessor processor = new UpgradeRuntimeQuickAssistProcessor();
+    
+    Assert.assertFalse(processor.canAssist(null));
+    Annotation annotation = new Annotation(true);
+    Assert.assertTrue(processor.canFix(annotation));
+    annotation.markDeleted(true);
+    Assert.assertFalse(processor.canFix(annotation));    
+    
     ICompletionProposal[] fixes = processor.computeQuickAssistProposals(null);
     assertEquals(1, fixes.length);
     assertEquals(UpgradeRuntimeSourceQuickFix.class.getName(), fixes[0].getClass().getName());
