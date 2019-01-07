@@ -53,7 +53,7 @@ public class XsltSourceQuickFix implements ICompletionProposal, ICompletionPropo
    */
   @Override
   public void apply(ITextViewer viewer, char trigger, int stateMask, int offset) {
-    URL xslt = ApplicationQuickFix.class.getResource(xsltPath);
+    URL xslt = XsltSourceQuickFix.class.getResource(xsltPath);
     IDocument document = viewer.getDocument();
     try (Reader in = new StringReader(document.get());
         InputStream stylesheetStream = xslt.openStream();

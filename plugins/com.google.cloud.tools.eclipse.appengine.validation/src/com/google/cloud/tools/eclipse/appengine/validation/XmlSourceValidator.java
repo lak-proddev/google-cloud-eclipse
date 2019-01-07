@@ -85,6 +85,7 @@ public class XmlSourceValidator implements ISourceValidator, IValidator, IExecut
    * Adds an {@link IMessage} to the XML file for every
    * {@link ElementProblem} found in the file.
    */
+  @VisibleForTesting
   void validate(IReporter reporter, IFile source, byte[] bytes) throws IOException {
     try {
       Document document = PositionalXmlScanner.parse(bytes);
@@ -147,7 +148,8 @@ public class XmlSourceValidator implements ISourceValidator, IValidator, IExecut
     message.setLineNo(element.getStart().getLineNumber());
     message.setOffset(elementOffset);
     message.setLength(element.getLength());
-    message.setAttribute(IQuickAssistProcessor.class.getName(), element.getQuickAssistProcessor());
+    IQuickAssistProcessor quickAssistProcessor = element.getQuickAssistProcessor();
+    message.setAttribute(IQuickAssistProcessor.class.getName(), quickAssistProcessor);
     reporter.addMessage(this, message);
   }
 
@@ -156,6 +158,7 @@ public class XmlSourceValidator implements ISourceValidator, IValidator, IExecut
    * null if the IValidationContext does not return any files that need
    * to be validated.
    */
+  @VisibleForTesting
   static IProject getProject(IValidationContext helper) {
     IFile file = getFile(helper);
     if (file != null) {
@@ -168,7 +171,7 @@ public class XmlSourceValidator implements ISourceValidator, IValidator, IExecut
    * Returns the IFile for a given URI or null if the file does
    * not exist in the workspace.
    */
-  static IFile getFile(IValidationContext helper) {
+  private static IFile getFile(IValidationContext helper) {
     String[] fileUri = helper.getURIs();
     if (fileUri.length > 0) {
       IFile file = getFile(fileUri[0]);
@@ -178,6 +181,7 @@ public class XmlSourceValidator implements ISourceValidator, IValidator, IExecut
   }
 
 
+  @VisibleForTesting
   static IFile getFile(String filePath) {
     IPath path = new Path(filePath);
     if (path.segmentCount() > 1) {

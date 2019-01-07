@@ -32,7 +32,7 @@ public class ElementProblemTest {
   @Test
   public void testElementProblemConstructor_nullElementName() {
     try {
-      new ElementProblem(null, "foo");
+      new ElementProblem(null, "foo", null);
       fail();
     } catch (NullPointerException ex) {
       assertNotNull(ex.getMessage());
@@ -59,10 +59,10 @@ public class ElementProblemTest {
   @SuppressWarnings("unlikely-arg-type")
   @Test
   public void testEquals() {
-    ElementProblem element1 = new ElementProblem("message", "marker");
+    ElementProblem element1 = new ElementProblem("message", "marker", null);
     assertEquals(element1, element1);
     
-    ElementProblem element2 = new ElementProblem("message", "marker");
+    ElementProblem element2 = new ElementProblem("message", "marker", null);
     assertTrue(element1.equals(element2));
     assertTrue(element2.equals(element1));
     
@@ -129,9 +129,9 @@ public class ElementProblemTest {
   
   @Test
   public void testHashCode() {
-    ElementProblem element1 = new ElementProblem("message", "marker");
-    ElementProblem element2 = new ElementProblem("message", "marker");
-    ElementProblem element3 = new ElementProblem("message", "marker2");
+    ElementProblem element1 = new ElementProblem("message", "marker", null);
+    ElementProblem element2 = new ElementProblem("message", "marker", null);
+    ElementProblem element3 = new ElementProblem("message", "marker2", null);
     assertEquals(element1.hashCode(), element2.hashCode());
     assertNotEquals(element1.hashCode(), element3.hashCode());
   }
