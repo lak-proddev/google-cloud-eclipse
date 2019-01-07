@@ -48,7 +48,8 @@ public abstract class AbstractQuickAssistProcessor implements IQuickAssistProces
 
   @Override
   public boolean canFix(Annotation annotation) {
-    return !annotation.isMarkedDeleted();
+    return true;
+    //return !annotation.isMarkedDeleted();
   }
 
   @Override

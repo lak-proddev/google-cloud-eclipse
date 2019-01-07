@@ -27,6 +27,7 @@ import com.google.cloud.tools.eclipse.test.util.project.TestProjectCreator;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Map.Entry;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
@@ -144,6 +145,10 @@ public class XmlValidatorTest {
     String message = Messages.getString("application.element");
     assertEquals(message, markers[0].getAttribute(IMarker.MESSAGE));
     assertEquals("line 1", markers[0].getAttribute(IMarker.LOCATION));
+    
+    for (Entry<String, Object> entry : markers[0].getAttributes().entrySet()) {
+      System.err.println(entry.getKey() + ": " + entry.getValue());
+    }
   }
 
   @Test

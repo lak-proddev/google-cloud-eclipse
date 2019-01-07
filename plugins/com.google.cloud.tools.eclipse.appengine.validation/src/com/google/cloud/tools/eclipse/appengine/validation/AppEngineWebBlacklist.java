@@ -65,6 +65,7 @@ class AppEngineWebBlacklist {
   
   static AbstractQuickAssistProcessor getQuickFixProcessor(String element) {
     Preconditions.checkNotNull(element, "element is null");
+    System.err.println("getting processor for " + element);
     return QUICK_FIX_PROCESSORS.get(element);
   }
   
