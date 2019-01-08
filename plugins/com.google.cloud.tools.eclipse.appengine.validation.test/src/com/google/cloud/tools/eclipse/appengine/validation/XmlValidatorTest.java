@@ -79,6 +79,7 @@ public class XmlValidatorTest {
     ValidationFramework framework = ValidationFramework.getDefault();
     Validator[] validators = framework.getValidatorsFor(webXml);
     for (Validator validator : validators) {
+      System.err.println(validator.getId());
       if ("com.google.cloud.tools.eclipse.appengine.validation.webXmlValidator"
           .equals(validator.getId())) {
         return true;
