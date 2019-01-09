@@ -21,14 +21,11 @@ import org.eclipse.wst.validation.internal.provisional.core.IMessage;
 
 class ObsoleteRuntime extends ElementProblem {
 
-  private final static UpgradeRuntimeQuickAssistProcessor processor =
-      new UpgradeRuntimeQuickAssistProcessor();
-  
   ObsoleteRuntime(String message, DocumentLocation start, int length) {
     super(message, "com.google.cloud.tools.eclipse.appengine.validation.runtimeMarker",
         IMarker.SEVERITY_WARNING,
         IMessage.NORMAL_SEVERITY,
-        start, length, processor);
+        start, length, AppEngineWebBlacklist.getQuickAssistProcessor("runtime"));
   }
 
 }
