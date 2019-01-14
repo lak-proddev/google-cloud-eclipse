@@ -42,18 +42,18 @@ public class CloudLibraries {
 
   /**
    * Library files for App Engine standard environment applications; specifically
-   * Objectify 5, App Engine API 1.0 SDK, and Google Cloud Endpoints.
+   * App Engine API 1.0 SDK and Google Cloud Endpoints.
    */
   public static final String APP_ENGINE_STANDARD_GROUP = "appengine"; //$NON-NLS-1$
 
   /**
    * Non-App Engine standard environment application libraries files that do not fall into the
-   * category of Google Cloud Client Library for Java. Includes Objectify 6.
+   * category of Google Cloud Client Libraries for Java. Includes Objectify 6.
    */
   public static final String NON_APP_ENGINE_STANDARD_GROUP = "non-appengine-standard"; //$NON-NLS-1$
 
   /**
-   * Library files for the Google Cloud Client Library for Java. E.g.
+   * Library files for the Google Cloud Client Libraries for Java. E.g.
    * Stackdriver Logging, Cloud Datastore, Cloud Storage, Cloud Translation, etc.
    */
   public static final String CLIENT_APIS_GROUP = "clientapis"; //$NON-NLS-1$

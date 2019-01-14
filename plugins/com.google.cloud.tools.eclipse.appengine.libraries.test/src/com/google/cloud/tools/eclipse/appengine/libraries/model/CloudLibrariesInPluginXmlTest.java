@@ -169,8 +169,7 @@ public class CloudLibrariesInPluginXmlTest {
     assertThat(objectifyMavenCoordinates.getArtifactId(), is("objectify"));
     DefaultArtifactVersion artifactVersion = new DefaultArtifactVersion(
         objectifyMavenCoordinates.getVersion());
-    // this library is pinned
-    assertEquals(new DefaultArtifactVersion("5.1.22"), artifactVersion);
+    assertEquals(new DefaultArtifactVersion("6.0.2"), artifactVersion);
     assertThat(objectifyMavenCoordinates.getType(), is("jar"));
     assertNull(objectifyMavenCoordinates.getClassifier());
 
@@ -226,7 +225,7 @@ public class CloudLibrariesInPluginXmlTest {
     assertThat(objectifyMavenCoordinates.getArtifactId(), is("objectify"));
     DefaultArtifactVersion artifactVersion = new DefaultArtifactVersion(
         objectifyMavenCoordinates.getVersion());
-    DefaultArtifactVersion expected = new DefaultArtifactVersion("6.0.0");
+    DefaultArtifactVersion expected = new DefaultArtifactVersion("6.0.2");
     assertTrue(artifactVersion.compareTo(expected) >= 0);
     assertThat(objectifyMavenCoordinates.getType(), is("jar"));
     assertNull(objectifyMavenCoordinates.getClassifier());
