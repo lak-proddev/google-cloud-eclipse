@@ -17,7 +17,6 @@
 package com.google.cloud.tools.eclipse.appengine.libraries.model;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -33,7 +32,7 @@ import org.junit.Test;
 
 /**
  * Test the libraries defined in plugin.xml to validate that
- * their attributes are correctly set.
+ * their attributes are correctly set. This is a plugin test.
  */
 public class CloudLibrariesInPluginXmlTest {
 
@@ -138,7 +137,7 @@ public class CloudLibrariesInPluginXmlTest {
   }
 
   @Test
-  public void testObjectify5LibraryConfig() throws URISyntaxException {
+  public void testObjectifyLibraryConfig() throws URISyntaxException {
     Library objectifyLibrary = CloudLibraries.getLibrary(OBJECTIFY_LIBRARY_ID);
     assertThat(objectifyLibrary.getId(), is(OBJECTIFY_LIBRARY_ID));
     assertThat(objectifyLibrary.getName(), is("Objectify"));
@@ -147,21 +146,10 @@ public class CloudLibrariesInPluginXmlTest {
         is(new URI("https://github.com/objectify/objectify/wiki")));
     assertTrue(objectifyLibrary.isExport());
 
-    List<LibraryFile> allDependencies = objectifyLibrary.getAllDependencies();
-    assertEquals(2, allDependencies.size());
+    List<LibraryFile> dependencies = objectifyLibrary.getDirectDependencies();
     
-    LibraryFile objectifyLibraryFile = null;
-    LibraryFile guavaLibraryFile = null;
-    for (LibraryFile file : allDependencies) {
-      if (file.getMavenCoordinates().getArtifactId().equals("objectify")) {
-        objectifyLibraryFile = file;
-      } else if (file.getMavenCoordinates().getArtifactId().equals("guava")) {
-        guavaLibraryFile = file;
-      }
-    }
-    assertNotNull("objectify not found", objectifyLibraryFile);
+    LibraryFile objectifyLibraryFile = dependencies.get(0);
     assertTrue("Objectify not exported", objectifyLibraryFile.isExport());
-    assertNotNull("guava not found", guavaLibraryFile);
 
     MavenCoordinates objectifyMavenCoordinates = objectifyLibraryFile.getMavenCoordinates();
     assertThat(objectifyMavenCoordinates.getRepository(), is("central"));
@@ -169,7 +157,9 @@ public class CloudLibrariesInPluginXmlTest {
     assertThat(objectifyMavenCoordinates.getArtifactId(), is("objectify"));
     DefaultArtifactVersion artifactVersion = new DefaultArtifactVersion(
         objectifyMavenCoordinates.getVersion());
-    assertEquals(new DefaultArtifactVersion("6.0.2"), artifactVersion);
+    DefaultArtifactVersion expected = new DefaultArtifactVersion("6.0.2");
+    assertTrue(artifactVersion.compareTo(expected) >= 0);
+    
     assertThat(objectifyMavenCoordinates.getType(), is("jar"));
     assertNull(objectifyMavenCoordinates.getClassifier());
 
@@ -177,20 +167,6 @@ public class CloudLibrariesInPluginXmlTest {
     assertTrue(objectifyLibraryFile.getFilters().isEmpty());
     assertTrue(objectifyLibraryFile.getJavadocUri().toString().startsWith(
         "https://www.javadoc.io/doc/com.googlecode.objectify/objectify/"));
-    
-    assertNull(guavaLibraryFile.getSourceUri());
-    assertTrue("Guava not exported", guavaLibraryFile.isExport());
-
-    MavenCoordinates guavaMavenCoordinates = guavaLibraryFile.getMavenCoordinates();
-    assertThat(guavaMavenCoordinates.getRepository(), is("central"));
-    assertThat(guavaMavenCoordinates.getGroupId(), is("com.google.guava"));
-    assertThat(guavaMavenCoordinates.getArtifactId(), is("guava"));
-    assertThat(guavaMavenCoordinates.getVersion(), is("20.0"));
-    assertThat(guavaMavenCoordinates.getType(), is("jar"));
-    assertNull(guavaMavenCoordinates.getClassifier());
-
-    assertNotNull(guavaLibraryFile.getFilters());
-    assertTrue(guavaLibraryFile.getFilters().isEmpty());
   }
 
   @Test
