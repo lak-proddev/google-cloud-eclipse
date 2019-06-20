@@ -18,12 +18,9 @@ package com.google.cloud.tools.eclipse.usagetracker;
 
 import com.google.cloud.tools.eclipse.util.CloudToolsInfo;
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.escape.CharEscaperBuilder;
-import com.google.common.escape.Escaper;
 import com.google.gson.Gson;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -56,37 +53,11 @@ public class AnalyticsPingManager {
 
   private static final Logger logger = Logger.getLogger(AnalyticsPingManager.class.getName());
 
-  private static final String ANALYTICS_COLLECTION_URL = "https://ssl.google-analytics.com/collect";
   private static final String CLEAR_CUT_COLLECTION_URL = "https://play.google.com/log";
-
-  // flag for Google Analytics 
-  private static final boolean USE_GOOGLE_ANALYTICS = true;
-
-  // Fixed-value query parameters present in every ping, and their fixed values:
-  //
-  // For the semantics of each parameter, consult the following:
-  //
-  // https://github.com/google/cloud-reporting/blob/master/src/main/java/com/google/cloud/metrics/MetricsUtils.java#L183
-  // https://developers.google.com/analytics/devguides/collection/protocol/v1/reference
-  @SuppressWarnings("serial")
-  private static final Map<String, String> STANDARD_PARAMETERS = Collections.unmodifiableMap(
-      new HashMap<String, String>() {
-        {
-          put("v", "1");  // Google Analytics Measurement Protocol version
-          put("tid", Constants.ANALYTICS_TRACKING_ID);  // tracking ID
-          put("ni", "0");  // Non-interactive? Report as interactive.
-          put("t", "pageview");  // Hit type
-          // "cd??" are for Custom Dimensions in GA.
-          put("cd21", "1");  // Yes, this ping is a virtual "page".
-          put("cd16", "0");  // Internal user? No.
-          put("cd17", "0");  // User signed in? We will ignore this.
-        }
-      });
 
   private static AnalyticsPingManager instance;
 
   // analytics services
-  private final String analyticsUrl;
   private final String clearCutUrl;
   
   // Preference store (should be configuration scoped) from which we get UUID, opt-in status, etc.
@@ -110,9 +81,8 @@ public class AnalyticsPingManager {
   private int sequencePosition = 0;
 
   @VisibleForTesting
-  AnalyticsPingManager(String analyticsUrl, String clearCutUrl, IEclipsePreferences preferences,
+  AnalyticsPingManager(String clearCutUrl, IEclipsePreferences preferences,
       ConcurrentLinkedQueue<PingEvent> concurrentLinkedQueue) {
-    this.analyticsUrl = analyticsUrl;
     this.clearCutUrl = clearCutUrl;
     this.preferences = Preconditions.checkNotNull(preferences);
     pingEventQueue = concurrentLinkedQueue;
@@ -120,14 +90,12 @@ public class AnalyticsPingManager {
 
   public static synchronized AnalyticsPingManager getInstance() {
     if (instance == null) {
-      String analyticsUrl = null;
       String clearCutUrl = null;
       if (!Platform.inDevelopmentMode() && isTrackingIdDefined()) {
         // Enable only in production environment.
         clearCutUrl = CLEAR_CUT_COLLECTION_URL;
-        analyticsUrl = ANALYTICS_COLLECTION_URL;
       }
-      instance = new AnalyticsPingManager(analyticsUrl, clearCutUrl, AnalyticsPreferences.getPreferenceNode(),
+      instance = new AnalyticsPingManager(clearCutUrl, AnalyticsPreferences.getPreferenceNode(),
           new ConcurrentLinkedQueue<PingEvent>());
     }
     return instance;
@@ -217,7 +185,7 @@ public class AnalyticsPingManager {
     Preconditions.checkArgument(!Strings.isNullOrEmpty(eventName), "eventName null or empty");
     Preconditions.checkNotNull(metadata);
 
-    if (analyticsUrl != null || clearCutUrl != null) {
+    if (clearCutUrl != null) {
       // Note: always enqueue if a user has not seen the opt-in dialog yet; enqueuing itself
       // doesn't mean that the event ping will be posted.
       if (userHasOptedIn() || !userHasRegisteredOptInStatus()) {
@@ -234,17 +202,6 @@ public class AnalyticsPingManager {
    */
   private void sendPing(PingEvent pingEvent) {
     if (userHasOptedIn()) {
-      
-      if (USE_GOOGLE_ANALYTICS) {
-        try {
-          Map<String, String> parametersMap = buildParametersMap(pingEvent);
-          HttpUtil.sendPost(analyticsUrl, parametersMap);
-        } catch (IOException ex) {
-          // Don't try to recover or retry.
-          logger.log(Level.FINE, "Failed to POST to Google Analytics", ex);
-        }
-      }
-      
       try {
         String json = jsonEncode(pingEvent);
         int resultCode = HttpUtil.sendPost(clearCutUrl, json, "application/json");
@@ -256,39 +213,6 @@ public class AnalyticsPingManager {
         logger.log(Level.FINE, "Failed to POST to Concord", ex);
       } 
     }
-  }
-
-  private static final Escaper METADATA_ESCAPER = new CharEscaperBuilder()
-      .addEscape(',', "\\,")
-      .addEscape('=', "\\=")
-      .addEscape('\\', "\\\\").toEscaper();
-
-  @VisibleForTesting
-  Map<String, String> buildParametersMap(PingEvent pingEvent) {
-    Map<String, String> parametersMap = new HashMap<>(STANDARD_PARAMETERS);
-    parametersMap.put("cid", getAnonymizedClientId());
-    parametersMap.put("cd19", CloudToolsInfo.METRICS_NAME);  // cd19: "event type"
-    parametersMap.put("cd20", pingEvent.eventName);
-
-    String virtualPageUrl = "/virtual/" + CloudToolsInfo.METRICS_NAME + "/" + pingEvent.eventName;
-    parametersMap.put("dp", virtualPageUrl);
-    parametersMap.put("dh", "virtual.eclipse");
-
-    Map<String, String> metadata = new HashMap<>(pingEvent.metadata);
-    metadata.putAll(getPlatformInfo());
-
-    if (!metadata.isEmpty()) {
-      List<String> escapedPairs = new ArrayList<>();
-
-      for (Map.Entry<String, String> entry : metadata.entrySet()) {
-        String key = METADATA_ESCAPER.escape(entry.getKey());
-        String value = METADATA_ESCAPER.escape(entry.getValue());
-        escapedPairs.add(key + "=" + value);
-      }
-      // Event metadata are passed as a (virtual) page title.
-      parametersMap.put("dt", Joiner.on(',').join(escapedPairs));
-    }
-    return parametersMap;
   }
 
   private static ImmutableMap<String, String> getPlatformInfo() {
