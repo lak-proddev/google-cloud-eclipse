@@ -127,6 +127,14 @@ public class DebugNativeAppEngineStandardProjectTest extends BaseProjectTest {
     assertEquals("Hello App Engine!",
         getUrlContents(new URL("http://localhost:8080/hello"), (int) SWTBotPreferences.TIMEOUT));
 
+    // Ensure debugger has connected by looking for well-known thread
+    assertNotNull(
+        SwtBotTreeUtilities.findItem(
+            bot, launchTree, item -> "Thread [main] (Running)".equals(item.getText())));
+
+    SwtBotTreeUtilities.waitUntilTreeContainsText(
+        bot, allItems[0], "App Engine Standard at localhost");
+
     {
       SWTBotView serversView = bot.viewById("org.eclipse.wst.server.ui.ServersView");
       serversView.show();

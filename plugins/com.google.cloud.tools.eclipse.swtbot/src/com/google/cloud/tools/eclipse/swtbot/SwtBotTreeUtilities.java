@@ -19,6 +19,9 @@ package com.google.cloud.tools.eclipse.swtbot;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterables;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.function.Predicate;
 import org.eclipse.swtbot.eclipse.finder.SWTWorkbenchBot;
 import org.eclipse.swtbot.swt.finder.exceptions.WidgetNotFoundException;
 import org.eclipse.swtbot.swt.finder.utils.SWTBotPreferences;
@@ -31,9 +34,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.StringDescription;
 
-/**
- * Utilities for manipulating trees.
- */
+/** Utilities for manipulating trees. */
 public class SwtBotTreeUtilities {
 
   /**
@@ -42,17 +43,18 @@ public class SwtBotTreeUtilities {
    * @throws TimeoutException if no items appear within the default timeout
    */
   public static SWTBotTreeItem waitUntilTreeHasItems(SWTWorkbenchBot bot, SWTBotTree tree) {
-    bot.waitUntil(new DefaultCondition() {
-      @Override
-      public String getFailureMessage() {
-        return "Tree items never appeared";
-      }
+    bot.waitUntil(
+        new DefaultCondition() {
+          @Override
+          public String getFailureMessage() {
+            return "Tree items never appeared";
+          }
 
-      @Override
-      public boolean test() throws Exception {
-        return tree.hasItems();
-      }
-    });
+          @Override
+          public boolean test() throws Exception {
+            return tree.hasItems();
+          }
+        });
     return tree.getAllItems()[0];
   }
 
@@ -122,21 +124,22 @@ public class SwtBotTreeUtilities {
 
   /**
    * Wait until the given tree has not items.
-   * 
+   *
    * @throws TimeoutException if no items appear within the default timeout
    */
   public static void waitUntilTreeHasNoItems(SWTWorkbenchBot bot, final SWTBotTree tree) {
-    bot.waitUntil(new DefaultCondition() {
-      @Override
-      public String getFailureMessage() {
-        return "Tree items never disappeared";
-      }
+    bot.waitUntil(
+        new DefaultCondition() {
+          @Override
+          public String getFailureMessage() {
+            return "Tree items never disappeared";
+          }
 
-      @Override
-      public boolean test() throws Exception {
-        return !tree.hasItems();
-      }
-    });
+          @Override
+          public boolean test() throws Exception {
+            return !tree.hasItems();
+          }
+        });
   }
 
   /**
@@ -226,5 +229,38 @@ public class SwtBotTreeUtilities {
       item = item.expandNode(nodeNames[i]);
     }
     return item.getNode(nodeNames[leafIndex]).select(); // throws WNFE
+  }
+
+  /** Expand the tree as necessary to find a child matching the given condition. */
+  public static SWTBotTreeItem findItem(
+      SWTWorkbenchBot bot, SWTBotTree tree, Predicate<SWTBotTreeItem> condition) {
+    // perform breadth-first search
+    waitUntilTreeHasItems(bot, tree);
+    SWTBotTreeItem[] items = tree.getAllItems();
+    for (SWTBotTreeItem item : items) {
+      if (condition.test(item)) {
+        return item;
+      }
+    }
+    LinkedList<SWTBotTreeItem> stack = new LinkedList<>();
+    Collections.addAll(stack, items);
+    while (!stack.isEmpty()) {
+      SWTBotTreeItem parent = stack.removeFirst();
+      items = parent.getItems();
+      if (items.length == 1 && "".equals(items[0].getText())) {
+        // Work around odd bug seen only on Windows and Linux.
+        // https://github.com/GoogleCloudPlatform/google-cloud-eclipse/issues/2569
+        parent.collapse();
+        parent.expand();
+        items = parent.getItems();
+      }
+      for (SWTBotTreeItem item : items) {
+        if (condition.test(item)) {
+          return item;
+        }
+      }
+      Collections.addAll(stack, items);
+    }
+    throw new WidgetNotFoundException("no matching child element found");
   }
 }
