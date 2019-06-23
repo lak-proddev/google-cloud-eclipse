@@ -338,7 +338,7 @@ These settings require configuring
 to point to appropriate JRE installations.  Tycho further requires
 that a toolchain defines an `id` for the specified _Execution
 Environment_ identifier.  For example, a `~/.m2/toolchains.xml` to
-configure Maven on macOS for Java 7, 8, and 11 toolchains might be:
+configure Maven on macOS for 8, and 11 toolchains might be:
 
 ```xml
 <?xml version="1.0" encoding="UTF8"?>
@@ -365,21 +365,10 @@ configure Maven on macOS for Java 7, 8, and 11 toolchains might be:
       <jdkHome>/Library/Java/JavaVirtualMachines/jdk1.8.0_181.jdk/Contents/Home/jre</jdkHome>
     </configuration>
   </toolchain>
-  <toolchain>
-    <type>jdk</type>
-    <provides>
-      <id>JavaSE-1.7</id>
-      <version>1.7</version>
-      <vendor>oracle</vendor>
-    </provides>
-    <configuration>
-      <jdkHome>/Library/Java/JavaVirtualMachines/jdk1.7.0_80.jdk/Contents/Home/jre</jdkHome>
-    </configuration>
-  </toolchain>
 </toolchains>
 ```
 
-Note that _jdkHome_ for `JavaSE-1.7` and `JavaSE-1.8` specifies the
+Note that _jdkHome_ for `JavaSE-1.8` specifies the
 `jre/` directory: Tycho sets the default boot classpath to
 _jdkHome_`/lib/*`, _jdkHome_`/lib/ext/*`, and _jdkHome_`/lib/endorsed/*`.
 For many JDKs, including Oracle's JDK and the OpenJDK *prior to Java 9*, those
