@@ -448,7 +448,8 @@ public class LocalAppEngineServerLaunchConfigurationDelegate
           generateServerRunConfiguration(configuration, server, mode, runnables);
       if (ILaunchManager.DEBUG_MODE.equals(mode)) {
         int debugPort = getDebugPort();
-        setupDebugTarget(devServerRunConfiguration, launch, debugPort, monitor);
+        devServerRunConfiguration =
+            setupDebugTarget(devServerRunConfiguration, launch, debugPort, monitor);
       }
 
       IJavaProject javaProject = JavaCore.create(modules[0].getProject());
@@ -492,8 +493,13 @@ public class LocalAppEngineServerLaunchConfigurationDelegate
         server.getName());
   }
 
-  private void setupDebugTarget(RunConfiguration devServerRunConfiguration, ILaunch launch,
-      int debugPort, IProgressMonitor monitor) throws CoreException {
+  /** Set up the debug target to connect to the remote JVM. Returns the updated RunConfiguration. */
+  private RunConfiguration setupDebugTarget(
+      RunConfiguration devServerRunConfiguration,
+      ILaunch launch,
+      int debugPort,
+      IProgressMonitor monitor)
+      throws CoreException {
     if (debugPort <= 0 || debugPort > 65535) {
       throw new IllegalArgumentException("Debug port is set to " + debugPort //$NON-NLS-1$
           + ", should be between 1-65535"); //$NON-NLS-1$
@@ -511,7 +517,8 @@ public class LocalAppEngineServerLaunchConfigurationDelegate
         JavaRuntime.getVMConnector(IJavaLaunchConfigurationConstants.ID_SOCKET_LISTEN_VM_CONNECTOR);
     if (connector == null) {
       abort("Cannot find Socket Listening connector", null, 0); //$NON-NLS-1$
-      return; // keep JDT null analysis happy
+      // NOTREACHED
+      return null; // keep JDT null analysis happy
     }
 
     // Set JVM debugger connection parameters
@@ -523,6 +530,7 @@ public class LocalAppEngineServerLaunchConfigurationDelegate
     connectionParameters.put("timeout", Integer.toString(timeout)); //$NON-NLS-1$
     connectionParameters.put("connectionLimit", "0"); //$NON-NLS-1$ //$NON-NLS-2$
     connector.connect(connectionParameters, monitor, launch);
+    return devServerRunConfiguration;
   }
 
   private int getDebugPort() throws CoreException {
