@@ -329,6 +329,7 @@
           <configuration>
             <runOrder>hourly</runOrder>
             <forkedProcessTimeoutInSeconds>600</forkedProcessTimeoutInSeconds>
+            <trimStackTrace>false</trimStackTrace>
             <!--
               - maven.artifact.threads=1 to workaround repository corruption seen in
                 https://github.com/GoogleCloudPlatform/google-cloud-eclipse/issues/2284
