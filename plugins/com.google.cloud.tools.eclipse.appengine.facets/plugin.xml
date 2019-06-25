@@ -96,6 +96,10 @@
       class="com.google.cloud.tools.eclipse.appengine.facets.AppEngineStandardRuntimeChangeListener"
       eventTypes="PRIMARY_RUNTIME_CHANGED">
     </listener>
+    <listener
+      class="com.google.cloud.tools.eclipse.appengine.facets.MavenFacetPostInstallChangeListener"
+      eventTypes="POST_INSTALL,POST_UNINSTALL">
+    </listener>
   </extension>
 
   <extension point="org.eclipse.ui.commands">
