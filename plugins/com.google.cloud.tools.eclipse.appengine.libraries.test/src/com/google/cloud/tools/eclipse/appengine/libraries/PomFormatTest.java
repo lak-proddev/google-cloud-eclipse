@@ -87,8 +87,7 @@ public class PomFormatTest {
     Bundle bundle = Platform.getBundle("com.google.cloud.tools.eclipse.appengine.libraries.test");
     URL fileUrl = bundle.getEntry("/testdata/formatAdd.xml");
     File expected = new File(FileLocator.resolve(fileUrl).toURI());
-    assertFileContentsEqual(pomFile.getLocation().toFile(), expected);
-
+    assertFileContentsEqual(expected, pomFile.getLocation().toFile());
   }
 
   @Test
@@ -103,10 +102,10 @@ public class PomFormatTest {
     Bundle bundle = Platform.getBundle("com.google.cloud.tools.eclipse.appengine.libraries.test");
     URL fileUrl = bundle.getEntry("/testdata/formatRemove.xml");
     File expected = new File(FileLocator.resolve(fileUrl).toURI());
-    assertFileContentsEqual(pomFile.getLocation().toFile(), expected);
+    assertFileContentsEqual(expected, pomFile.getLocation().toFile());
   }
 
-  private static void assertFileContentsEqual(File actual, File expected) throws IOException {
-    assertArrayEquals(Files.readAllBytes(actual.toPath()), Files.readAllBytes(expected.toPath()));
+  private static void assertFileContentsEqual(File expected, File actual) throws IOException {
+    assertArrayEquals(Files.readAllBytes(expected.toPath()), Files.readAllBytes(actual.toPath()));
   }
 }
