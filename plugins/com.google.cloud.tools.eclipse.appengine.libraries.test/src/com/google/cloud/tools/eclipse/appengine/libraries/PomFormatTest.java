@@ -16,15 +16,13 @@
 
 package com.google.cloud.tools.eclipse.appengine.libraries;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.assertArrayEquals;
 
 import com.google.cloud.tools.eclipse.appengine.libraries.model.Library;
 import com.google.cloud.tools.eclipse.appengine.libraries.model.LibraryFile;
 import com.google.cloud.tools.eclipse.test.util.project.TestProjectCreator;
 import com.google.cloud.tools.eclipse.util.ArtifactRetriever;
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -39,13 +37,14 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Platform;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.osgi.framework.Bundle;
 import org.xml.sax.SAXException;
 
-public class POMFormatTest {
+public class PomFormatTest {
 
   @Rule
   public final TestProjectCreator projectCreator = new TestProjectCreator();
@@ -66,6 +65,11 @@ public class POMFormatTest {
     logger.setLevel(Level.OFF);
   }
 
+  @After
+  public void tearDown() {
+    Logger logger = Logger.getLogger(ArtifactRetriever.class.getName());
+    logger.setLevel(null);
+  }
 
   @Test
   public void testAddDependencies() throws Exception {
@@ -81,8 +85,8 @@ public class POMFormatTest {
     pom.addDependencies(libraries);
 
     Bundle bundle = Platform.getBundle("com.google.cloud.tools.eclipse.appengine.libraries.test");
-    URL fileURL = bundle.getEntry("/testdata/formatAdd.xml");
-    File expected = new File(FileLocator.resolve(fileURL).toURI());
+    URL fileUrl = bundle.getEntry("/testdata/formatAdd.xml");
+    File expected = new File(FileLocator.resolve(fileUrl).toURI());
     assertFileContentsEqual(pomFile.getLocation().toFile(), expected);
 
   }
@@ -97,38 +101,12 @@ public class POMFormatTest {
     pom.addDependencies(Arrays.asList(library1, library2));
 
     Bundle bundle = Platform.getBundle("com.google.cloud.tools.eclipse.appengine.libraries.test");
-    URL fileURL = bundle.getEntry("/testdata/formatRemove.xml");
-    File expected = new File(FileLocator.resolve(fileURL).toURI());
+    URL fileUrl = bundle.getEntry("/testdata/formatRemove.xml");
+    File expected = new File(FileLocator.resolve(fileUrl).toURI());
     assertFileContentsEqual(pomFile.getLocation().toFile(), expected);
   }
 
-  public static void assertFileContentsEqual(File actual, File expected) throws IOException {
-    boolean areEqual = true;
-    try (BufferedReader reader1 = new BufferedReader(new FileReader(actual));
-        BufferedReader reader2 = new BufferedReader(new FileReader(expected));) {
-      String line1 = reader1.readLine();
-      String line2 = reader2.readLine();
-
-      int lineNum = 1;
-
-      while (line1 != null || line2 != null) {
-        if (line1 == null || line2 == null) {
-          areEqual = false;
-          break;
-        } else if (!line1.equalsIgnoreCase(line2)) {
-          areEqual = false;
-          break;
-        }
-        line1 = reader1.readLine();
-        line2 = reader2.readLine();
-        lineNum++;
-      }
-      if (!areEqual) {
-        String message = "Two files have different content. They differ at line " + lineNum + " \""
-            + actual.getName() + "\" has " + line1 + " and \"" + expected.getName() + "\" has "
-            + line2 + " at line " + lineNum + "\n";
-        fail(message);
-      }
-    }
+  private static void assertFileContentsEqual(File actual, File expected) throws IOException {
+    assertArrayEquals(Files.readAllBytes(actual.toPath()), Files.readAllBytes(expected.toPath()));
   }
 }
