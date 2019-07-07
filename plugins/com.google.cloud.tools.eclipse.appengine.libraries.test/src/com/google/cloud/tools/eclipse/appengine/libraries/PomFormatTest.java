@@ -16,7 +16,7 @@
 
 package com.google.cloud.tools.eclipse.appengine.libraries;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.fail;
 
 import com.google.cloud.tools.eclipse.appengine.libraries.model.Library;
 import com.google.cloud.tools.eclipse.appengine.libraries.model.LibraryFile;
@@ -26,8 +26,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -106,6 +108,32 @@ public class PomFormatTest {
   }
 
   private static void assertFileContentsEqual(File expected, File actual) throws IOException {
-    assertArrayEquals(Files.readAllBytes(expected.toPath()), Files.readAllBytes(actual.toPath()));
+    final List<String> expectedLines =
+        Files.readAllLines(expected.toPath(), Charset.forName("UTF-8"));
+    final List<String> actualLines = Files.readAllLines(actual.toPath(), Charset.forName("UTF-8"));
+
+    if (expectedLines == null || expectedLines.size() == 0) {
+      fail("Expected file shouldn't be empty");
+      return;
+    }
+    if (expectedLines.size() != actualLines.size()) {
+      fail("Line sizes are differed, expected.length=" + expectedLines.size() + " actual.length="
+          + actualLines.size());
+      return;
+    }
+
+    final List<String> diff = new ArrayList<>();
+    for (final String line : expectedLines) {
+      if (!actualLines.contains(line)) {
+        diff.add(("Line Number : " + expectedLines.indexOf(line) + 1) + " " + line + "\n");
+      }
+    }
+    if (diff.size() > 0) {
+      String message = "The difference are:\n";
+      for (String line : diff) {
+        message = message.concat(line);
+      }
+      fail(message);
+    }
   }
 }
