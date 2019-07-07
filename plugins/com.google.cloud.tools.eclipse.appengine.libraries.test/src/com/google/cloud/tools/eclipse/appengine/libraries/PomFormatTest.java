@@ -129,7 +129,7 @@ public class PomFormatTest {
       }
     }
     if (diff.size() > 0) {
-      String message = "The difference are:\n";
+      String message = "The differences are:\n";
       for (String line : diff) {
         message = message.concat(line);
       }
